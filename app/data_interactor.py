@@ -40,12 +40,12 @@ class DataInteractor:
         collection = db[self.collection_name]
 
         try:
-            exist = collection.count_documents({"phone_number": contact_data["phone_number"]})
-            if exist:
+            exist = collection.find_one({"phone_number": contact_data["phone_number"]})
+            if exist is not None:
                 print(f"The phone number {contact_data['phone_number']} already exists!!!")
                 return None
             result = collection.insert_one(contact_data)
-            return result.inserted_id
+            return str(result.inserted_id)
         except Exception as e:
             print(f"Error creating contact: {e}")
             return None
@@ -60,8 +60,8 @@ class DataInteractor:
         db = conn[self.database_name]
         collection = db[self.collection_name]
         try:
-            contacts = collection.find()
-            return [Contact.from_dict(contact) for contact in contacts]
+            contacts = collection.find().to_list()
+            return [Contact.from_dict(contact).to_dict() for contact in contacts]
         finally:
             self.close_connection()
 
@@ -75,8 +75,8 @@ class DataInteractor:
 
         try:
             if "phone_number" in contact_data.keys():
-                exist = collection.count_documents({"phone_number": contact_data["phone_number"]})
-                if exist:
+                exist = collection.find_one({"phone_number": contact_data["phone_number"]})
+                if exist is not None:
                     print(f"The phone number {contact_data['phone_number']} already exists!!!")
                     return False
             result = collection.update_one({'_id': ObjectId(contact_id)}, {"$set": contact_data})
