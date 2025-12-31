@@ -13,3 +13,10 @@ spec:
     env:
     - name: MONGO_INITDB_DATABASE
       value: "contactsdb"
+    volumeMounts:
+      - name: mongodb-storage
+        mountPath: /data/db
+  volumes:
+  - name: mongodb-storage
+    persistentVolumeClaim:
+      claimName: mongodb-volume
