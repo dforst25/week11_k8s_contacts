@@ -8,10 +8,13 @@ class Contact:
     def to_dict(self):
         return self.__dict__
 
+    def __repr__(self):
+        return f"id: {self.id}\nfull_name: {self.first_name} {self.last_name}\nphone_number: {self.phone_number}"
+
     @classmethod
     def from_dict(cls, dict_contact: dict):
         return cls(
-            dict_contact["id"],
+            dict_contact["_id"],
             dict_contact["first_name"],
             dict_contact["last_name"],
             dict_contact["phone_number"]
