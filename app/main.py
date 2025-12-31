@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 from data_interactor import DataInteractor
 
+
 app = FastAPI()
 db = DataInteractor()
 
