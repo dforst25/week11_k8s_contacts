@@ -2,10 +2,9 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from data_interactor import DataInteractor
-import uvicorn
 
 app = FastAPI()
-db = DataInteractor("contactsdb", "contacts")
+db = DataInteractor()
 
 
 class ContactBody(BaseModel):
@@ -58,7 +57,3 @@ def delete_contact_api(id: str):
     if not result:
         raise HTTPException(status_code=404, detail="Contact not found")
     return {"message": "Contact removed successfully"}
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, port=8088)

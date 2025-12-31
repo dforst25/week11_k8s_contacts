@@ -2,17 +2,18 @@ from contact import Contact
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from bson.objectid import ObjectId
+import os
 
 
 class DataInteractor:
-    def __init__(self, database_name, collection_name):
+    def __init__(self):
         self._connection = None
         self.config = {
-            "host": 'localhost',
-            "port": 27017,
+            "host": os.getenv("MONGO_HOST"),
+            "port": os.getenv("MONGO_PORT"),
         }
-        self.database_name = database_name
-        self.collection_name = collection_name
+        self.database_name = os.getenv("MONGO_DB")
+        self.collection_name = os.getenv("MONGO_COLLECTION")
 
     def _get_connection(self):
         if self._connection is not None:
