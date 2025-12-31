@@ -2,17 +2,18 @@ from contact import Contact
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from bson.objectid import ObjectId
+import os
 
 
 class DataInteractor:
-    def __init__(self, database_name, collection_name):
+    def __init__(self):
         self._connection = None
         self.config = {
-            "host": 'localhost',
-            "port": 27017,
+            "host": os.getenv("MONGO_HOST"),
+            "port": int(os.getenv("MONGO_PORT"))
         }
-        self.database_name = database_name
-        self.collection_name = collection_name
+        self.database_name = os.getenv("MONGO_DB")
+        self.collection_name = os.getenv("MONGO_COLLECTION")
 
     def _get_connection(self):
         if self._connection is not None:
@@ -23,14 +24,6 @@ class DataInteractor:
         except ConnectionFailure as e:
             print(f"Connection Error: {e}")
             return None
-
-    def close_connection(self):
-        if self._connection is not None:
-            try:
-                self._connection.close()
-                self._connection = None
-            except Exception as e:
-                print(f"Closing Connection Error: {e}")
 
     def create_contact(self, contact_data: dict):
         conn = self._get_connection()
@@ -49,8 +42,6 @@ class DataInteractor:
         except Exception as e:
             print(f"Error creating contact: {e}")
             return None
-        finally:
-            self.close_connection()
 
     def get_all_contacts(self):
         conn = self._get_connection()
@@ -59,11 +50,8 @@ class DataInteractor:
 
         db = conn[self.database_name]
         collection = db[self.collection_name]
-        try:
-            contacts = collection.find().to_list()
-            return [Contact.from_dict(contact).to_dict() for contact in contacts]
-        finally:
-            self.close_connection()
+        contacts = collection.find().to_list()
+        return [Contact.from_dict(contact).to_dict() for contact in contacts]
 
     def update_contact(self, contact_id: str, contact_data: dict) -> bool:
         conn = self._get_connection()
@@ -84,8 +72,6 @@ class DataInteractor:
         except Exception as e:
             print(f"Update Error: {e}")
             return False
-        finally:
-            self.close_connection()
 
     def delete_contact(self, contact_id: str) -> bool:
         conn = self._get_connection()
@@ -100,5 +86,3 @@ class DataInteractor:
         except Exception as e:
             print(f"Delete Error: {e}")
             return False
-        finally:
-            self.close_connection()

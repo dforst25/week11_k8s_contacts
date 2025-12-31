@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  containers:
+  - name: contact-api
+    image: dforst98/week11-contacts:v1
+    imagePullPolicy: Always
+    ports:
+    - containerPort: 8000
+    env:
+    - name: MONGO_HOST
+      value: "mongodb-service"
+    - name: MONGO_PORT
+      value: "27017"
+    - name: MONGO_DB
+      value: "contactsdb"
+    - name: MONGO_COLLECTION
+      value: "contacts"
